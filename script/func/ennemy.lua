@@ -3,6 +3,10 @@ Ennemy = Object:extend()
 local ennemy_radius = 10
 local attacking_orbit = 160
 local pump_timer = Timer()
+local direction_x = 0
+local direction_y = 0
+local droplets = {} -- initialize droplet list
+local can_pump = true
 
 function Ennemy:new(ocean, planet)
     -- attacking location: pick a random location among the ocean vertices
@@ -14,8 +18,8 @@ function Ennemy:new(ocean, planet)
     self.y_attacking = planet.y + attacking_orbit * math.sin(attacking_angle)
 
     -- find the normalized direction the ennemy should come from
-    local direction_x = (planet.x - self.x_attacking) / attacking_orbit
-    local direction_y = (planet.y - self.y_attacking) / attacking_orbit
+    direction_x = (planet.x - self.x_attacking) / attacking_orbit
+    direction_y = (planet.y - self.y_attacking) / attacking_orbit
 
     -- compute the trajectory
     local n_points = 10 -- number of points of the trajectory
@@ -45,10 +49,11 @@ function Ennemy:new(ocean, planet)
 
     -- state machine can be 'travelling' and pumping
     self.state = 'travelling'
+
 end
 
 
-function Ennemy:update(dt, ocean)
+function Ennemy:update(dt, ocean, planet)
     pump_timer:update(dt)    
 
     -- state machine
@@ -64,17 +69,23 @@ function Ennemy:update(dt, ocean)
 
     elseif self.state == 'attacking' then
         -- check if a wave is destroying the little dude
-        if ocean.vertices_radii[self.position_above_ocean] >= attacking_orbit then
+        if ocean.vertices_radii[self.position_above_ocean] >= attacking_orbit-ennemy_radius then
             self.state = 'destroyed'
-            print('destroyed')
         end
 
-        -- compute direction (to compute once earlier though)
-        local direction_x = (planet.x - self.x_attacking) / attacking_orbit
-        local direction_y = (planet.y - self.y_attacking) / attacking_orbit
-        spawn_timer:every(1, function() self:pump_water() end)
+        -- trigger the pumping event
+        if can_pump then
+            can_pump = false
+            pump_timer:after(4, function() can_pump = true end)
+            self:pump_water(planet)
+        end
+    
+        for i, droplet in ipairs(droplets) do
+            -- update droplet location
+            droplet:update()
 
-        -- remove the droplets when they reach the ship
+            -- remove the droplets when they reach the ship
+        end
     end
 end
 
@@ -85,11 +96,17 @@ function Ennemy:draw()
         love.graphics.setColor(1,1,1,0.1)
     end
     love.graphics.circle('fill', self.x, self.y, ennemy_radius)
-        
+
     -- draw the droplets
+    for i, droplet in ipairs(droplets) do
+        droplet:draw()
+    end
+
     love.graphics.setColor(1,1,1,1)
 end
 
-function Ennemy:pump_water()
+function Ennemy:pump_water(planet)
+    print('spawn')
     -- spwan droplet in the center of the planet
+    table.insert(droplets, Droplet(planet.x, planet.y, self.x, self.y))
 end

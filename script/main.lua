@@ -47,7 +47,7 @@ function love.update(dt)
 
 	-- update ennemies
 	for i, ennemy in ipairs(ennemies) do
-		ennemies[i]:update(dt, ocean)
+		ennemies[i]:update(dt, ocean, planet)
 	end
 end
 
@@ -58,7 +58,7 @@ function love.draw()
 		ennemies[i]:draw()
 	end
 	ocean:draw()
-	planet:draw()
+	-- planet:draw()
 	moon:draw()
 end
 

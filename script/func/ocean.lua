@@ -3,10 +3,11 @@ Ocean = Object:extend()
 local moon_distances = {}
 local planet_distances = {}
 timer = Timer()
+
 function Ocean:new(planet, moon)
     -- self.timer = Timer()
     self.n_vertices = 60
-    self.maximum_radius = planet.radius + 90
+    self.maximum_radius = planet.radius + 100
     self.initial_radius = planet.radius + 30
     self.velocities = {0.2, 0.7, 1, 0.7, 0.2}
 
@@ -90,7 +91,7 @@ end
 
 function Ocean:big_wave()
     local interaction_time = 1
-    local dv = 0.05+1
+    local dv = 0.06+1
 
     timer:during(interaction_time,
                     function(dt)
