@@ -22,7 +22,6 @@ local can_spawn = true
 
 function love.load()
 	spawn_timer = Timer()
-	timer = Timer()
 	planet = Planet(WIND_W/2, WIND_H/2)
 	moon = Moon(planet)
 	ocean = Ocean(planet,moon)
@@ -36,19 +35,19 @@ end
 function love.update(dt)
 	planet:update(dt)
 	moon:update(planet)
-	ocean:update(planet, moon)
+	ocean:update(planet, moon, dt)
 
 	-- spawn ennemies
 	spawn_timer:update(dt)
 	if can_spawn then
 		can_spawn = false
 		table.insert(ennemies, Ennemy(ocean, planet))
-		spawn_timer:after(2, function() can_spawn = true end)
+		spawn_timer:after(4, function() can_spawn = true end)
 	end
 
 	-- update ennemies
 	for i, ennemy in ipairs(ennemies) do
-		ennemies[i]:update(dt)
+		ennemies[i]:update(dt, ocean)
 	end
 end
 
@@ -68,5 +67,10 @@ function love.keypressed(key, unicode)
 	-- leave the game quickly fiouuuu
 	if key == "escape" then
 		love.event.quit()
+	end
+
+	if key == 'up' then
+		ocean:big_wave()
+		moon:attack()
 	end
 end

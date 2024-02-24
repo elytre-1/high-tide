@@ -1,7 +1,7 @@
 Moon = Object:extend()
 
 local orbit = 250 -- radius of the orbit
-local mass_center_orbit = 190 -- radius of the orbit
+local mass_center_orbit = 120 -- radius of the orbit
 local moon_radius = 30
 local minimum_acceleration = 3e-3
 local maximum_acceleration = 6*minimum_acceleration
@@ -33,7 +33,11 @@ function Moon:update(planet)
     end
 
     self.theta = self.theta + self.direction * self.acceleration
-    
+    if self.theta < 0 then
+        self.theta = 2*math.pi 
+    elseif self.theta > 2*math.pi then
+        self.theta = 0
+    end
     -- changement de repère
     self.x = planet.x + orbit * math.cos(self.theta)
     self.y = planet.y + orbit * math.sin(self.theta)
@@ -54,10 +58,12 @@ function Moon:decelerate()
     end
 end
 
+function Moon:attack()
+    
+end
+
 function Moon:draw()
     love.graphics.setColor(1,1,1,1)
     love.graphics.circle('fill', self.x, self.y, moon_radius)
-    love.graphics.setColor(1,1,1,0.1)
-    love.graphics.circle('fill', self.x_mass_center, self.y_mass_center, 10)
     love.graphics.setColor(1,1,1,1)
 end

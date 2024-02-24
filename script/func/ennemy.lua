@@ -8,7 +8,8 @@ function Ennemy:new(ocean, planet)
     -- attacking location: pick a random location among the ocean vertices
     math.randomseed(os.time()) -- seed for the RNG
     local dtheta = 2*math.pi / ocean.n_vertices
-    local attacking_angle = math.random(1, ocean.n_vertices) * dtheta
+    self.position_above_ocean = math.random(1, ocean.n_vertices)
+    local attacking_angle = self.position_above_ocean * dtheta
     self.x_attacking = planet.x + attacking_orbit * math.cos(attacking_angle)
     self.y_attacking = planet.y + attacking_orbit * math.sin(attacking_angle)
 
@@ -47,9 +48,10 @@ function Ennemy:new(ocean, planet)
 end
 
 
-function Ennemy:update(dt)
-    pump_timer:update(dt)
+function Ennemy:update(dt, ocean)
+    pump_timer:update(dt)    
 
+    -- state machine
     if self.state == 'travelling' then
         if self.t >= 1 then
             self.x = self.trajectory_x[self.t]
@@ -57,9 +59,16 @@ function Ennemy:update(dt)
             self.t = self.t - 1
         else
             self.state = 'attacking'
+            print('attacking')
         end
 
     elseif self.state == 'attacking' then
+        -- check if a wave is destroying the little dude
+        if ocean.vertices_radii[self.position_above_ocean] >= attacking_orbit then
+            self.state = 'destroyed'
+            print('destroyed')
+        end
+
         -- compute direction (to compute once earlier though)
         local direction_x = (planet.x - self.x_attacking) / attacking_orbit
         local direction_y = (planet.y - self.y_attacking) / attacking_orbit
@@ -71,9 +80,12 @@ end
 
 function Ennemy:draw()
     -- draw the ennemy
-    love.graphics.setColor(1,0,1,1)
+    love.graphics.setColor(1,1,1,1)
+    if self.state == 'destroyed' then
+        love.graphics.setColor(1,1,1,0.1)
+    end
     love.graphics.circle('fill', self.x, self.y, ennemy_radius)
-    
+        
     -- draw the droplets
     love.graphics.setColor(1,1,1,1)
 end
