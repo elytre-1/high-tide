@@ -16,11 +16,12 @@ WIND_W = 600
 love.graphics.setDefaultFilter('nearest','nearest') -- pas de filtre pour les sprites
 love.window.setMode(WIND_W, WIND_H, {borderless = true})
 love.window.setTitle('node-node')
-background = love.graphics.newImage('assets/background/background_600x600.png')
+background = love.graphics.newImage('assets/background/background_star_600x600.png')
 
 local can_spawn = true
 
 function love.load()
+	sound = love.audio.newSource("assets/sounds/callsix__onda_lunar__120bpm_.wav", "static") 
 	spawn_timer = Timer()
 	planet = Planet(WIND_W/2, WIND_H/2)
 	moon = Moon(planet)
@@ -49,6 +50,11 @@ function love.update(dt)
 	for i, ennemy in ipairs(ennemies) do
 		ennemies[i]:update(dt, ocean, planet)
 	end
+
+	-- soundtrack
+	if not sound:isPlaying() then
+		love.audio.play(sound)
+	end
 end
 
 
@@ -58,7 +64,7 @@ function love.draw()
 		ennemies[i]:draw()
 	end
 	ocean:draw()
-	-- planet:draw()
+	planet:draw()
 	moon:draw()
 end
 
