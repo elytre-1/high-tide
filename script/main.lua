@@ -9,14 +9,18 @@ require 'func/moon'
 require 'func/ocean'
 require 'func/ennemy'
 require 'func/droplet'
+require 'func/gameloop'
+require 'func/ui'
+require 'func/button'
 
 local screen_ratio = 1920/1080
 WIND_H = 600 -- les variables globales sont écrites en majuscule
-WIND_W = 600
+WIND_W = 1000
 love.graphics.setDefaultFilter('nearest','nearest') -- pas de filtre pour les sprites
 love.window.setMode(WIND_W, WIND_H, {borderless = true})
 love.window.setTitle('node-node')
-background = love.graphics.newImage('assets/background/background_star_600x600.png')
+background = love.graphics.newImage('assets/background/background_star_1000x600.png')
+CMU_serif = love.graphics.newFont("assets/fonts/computer-modern/cmunvt.ttf", 40)
 
 local can_spawn = true
 
@@ -26,29 +30,33 @@ function love.load()
 	planet = Planet(WIND_W/2, WIND_H/2)
 	moon = Moon(planet)
 	ocean = Ocean(planet,moon)
+	gameloop = Gameloop(CMU_serif)
 
 	--initialize ennemies
-	local n_ennemies = 1
-	ennemies = {Ennemy(ocean, planet)}
+	ennemies = {}
 end
 
 
 function love.update(dt)
+	gameloop:update()
+	
 	planet:update(dt)
 	moon:update(planet)
 	ocean:update(planet, moon, dt)
 
 	-- spawn ennemies
 	spawn_timer:update(dt)
-	if can_spawn then
-		can_spawn = false
-		table.insert(ennemies, Ennemy(ocean, planet))
-		spawn_timer:after(4, function() can_spawn = true end)
-	end
+	if not gameloop.state == 'titlescreen' then
+		if can_spawn then
+			can_spawn = false
+			table.insert(ennemies, Ennemy(ocean, planet))
+			spawn_timer:after(4, function() can_spawn = true end)
+		end
 
-	-- update ennemies
-	for i, ennemy in ipairs(ennemies) do
-		ennemies[i]:update(dt, ocean, planet)
+		-- update ennemies
+		for i, ennemy in ipairs(ennemies) do
+			ennemies[i]:update(dt, ocean, planet)
+		end
 	end
 
 	-- soundtrack
@@ -63,6 +71,8 @@ function love.draw()
 	for i, ennemy in ipairs(ennemies) do
 		ennemies[i]:draw()
 	end
+
+	gameloop:draw()
 	ocean:draw()
 	planet:draw()
 	moon:draw()

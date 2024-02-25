@@ -8,13 +8,13 @@ function Ocean:new(planet, moon)
     -- self.timer = Timer()
     self.n_vertices = 60
     self.maximum_radius = planet.radius + 100
-    self.initial_radius = planet.radius + 30
+    self.radius = planet.radius + 30
     self.velocities = {0.2, 0.7, 1, 0.7, 0.2}
 
     -- initialize the vertices to planet distances
     self.vertices_radii = {}
     for i = 1, self.n_vertices do
-        table.insert(self.vertices_radii, self.initial_radius)
+        table.insert(self.vertices_radii, self.radius)
     end
 
     -- compute initial vertices
@@ -76,8 +76,10 @@ function Ocean:update(planet,moon,dt)
     -- reset values of other vertices
     for i = 1, #self.vertices_radii do
         if not has_value(self.neighbors_index, i) then
-            if self.vertices_radii[i] > self.initial_radius then
+            if self.vertices_radii[i] > self.radius then
                 self.vertices_radii[i] = self.vertices_radii[i] - 1e-5*planet_distances[i]^2
+            elseif self.vertices_radii[i] < self.radius then
+                self.vertices_radii[i] = self.vertices_radii[i] + 1e-5*planet_distances[i]^2
             end
         end
     end
