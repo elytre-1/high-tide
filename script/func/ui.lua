@@ -7,11 +7,6 @@ function Ui:new(font)
 
 	-- textboxes
 	self.textbox = {}
-	-- self.textbox[0] = Textbox("", 0.5*wind_w, 0.8*wind_h, self.font, "What is your command?")
-	-- self.textbox[0].empty_msg = "What is your command?"
-	-- self.textbox[0].w = 300
-	-- self.textbox[0].x = 0.33*wind_w
-	-- self.textbox[0].y = 0.8*wind_h
 
 	-- slidebars
 	self.slidebar = {}

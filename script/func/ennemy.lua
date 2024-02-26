@@ -10,12 +10,18 @@ local tank_capacity = 9
 local tank_increase_rate = 3
 local pumping_rate = 3
 
+
+local timer = 0
+
 function Ennemy:new(ocean, planet)
     self.attacking_orbit = planet.radius + 80
     self.sprite = love.graphics.newImage('assets/sprites/ennemy_sprite.png')
     self.tank_radius = 0 -- how big the reservoir is
     self.can_pump = true
     self.pump_timer = Timer()
+    self.blink_timer = Timer()
+    self.blink = true
+    self.alpha = 1
     self.droplets = {} -- initialize droplet list
 
     -- attacking location: pick a random location among the ocean vertices
@@ -60,8 +66,9 @@ function Ennemy:new(ocean, planet)
 end
 
 
-function Ennemy:update(dt, ocean, planet)
+function Ennemy:update(dt, ocean, planet, gameloop)
     self.pump_timer:update(dt)    
+    self.blink_timer:update(dt)
 
     -- state machine
     if self.state == 'travel' then
@@ -74,11 +81,6 @@ function Ennemy:update(dt, ocean, planet)
         end
 
     elseif self.state == 'attacking' then
-        print('----')
-        print('self.attacking_orbit '..self.attacking_orbit)
-        print('ennemy_radius '..ennemy_radius)
-        print('self.position_above_ocean '..self.position_above_ocean)
-
         -- check if a wave is destroying the little dude
         if ocean.vertices_radii[self.position_above_ocean+1] >= self.attacking_orbit-ennemy_radius then
             self.state = 'destroyed'
@@ -112,6 +114,7 @@ function Ennemy:update(dt, ocean, planet)
 
                 if ocean.radius <= planet.radius then
                     -- trigger loose screen
+                    gameloop.state = 'lose'
                 end
 
                 -- leave when the tank is full
@@ -135,6 +138,19 @@ function Ennemy:update(dt, ocean, planet)
         end
 
     elseif self.state == 'destroyed' then
+        -- blinking effect
+        self.blink_timer:after(0.5,
+            function()
+                self.blink = false
+            end)
+
+        if self.blink then
+            timer = timer + 0.4
+            self.alpha = math.abs(math.sin(timer))
+        else
+            self.alpha = 0
+        end
+
         if self.tank_radius > 0 then
             local number_of_droplets = math.floor(self.tank_radius/tank_increase_rate)
             ocean.radius = ocean.radius + number_of_droplets * pumping_rate
@@ -152,7 +168,16 @@ function Ennemy:draw()
     love.graphics.setColor(1,1,1,1)
 
     if self.state == 'destroyed' then
-        love.graphics.setColor(1,1,1,0)
+        -- love.graphics.setColor(1,1,1,0.3)
+
+        
+        love.graphics.setColor(1,1,1,self.alpha)
+        local scale = 0.3 -- scale factor
+        local ox, oy = self.sprite:getWidth()/2, self.sprite:getHeight()/2 -- offset
+        local kx, ky = 0, 0
+        local direction = 1
+        love.graphics.draw(self.sprite, self.x, self.y, self.attacking_angle+direction*math.pi/2, scale, scale, ox, oy, kx, ky )
+        love.graphics.setColor(1,1,1,1)
 
     elseif self.state == 'attacking' or self.state == 'travel' or self.state == 'travel_back' then
         -- draw the reservoir
@@ -169,6 +194,7 @@ function Ennemy:draw()
         if self.state == 'travel_back' then
             direction = -1
         end
+
         love.graphics.draw(self.sprite, self.x, self.y, self.attacking_angle+direction*math.pi/2, scale, scale, ox, oy, kx, ky )
             
         -- draw the droplets

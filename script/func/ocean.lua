@@ -149,11 +149,6 @@ function Ocean:draw()
     love.graphics.setColor(52/255, 235/255, 174/255 , 0.5)
     love.graphics.polygon("fill", self.vertices)
     love.graphics.setColor(52/255, 235/255, 174/255 , 1)
-    -- for i, neighbor in ipairs(self.neighbors_index) do
-    --     love.graphics.circle('fill', self.vertices_x[neighbor], self.vertices_y[neighbor], 5)
-    -- end
-    -- love.graphics.circle('fill', self.vertices_x[self.closest_vertice], self.vertices_y[self.closest_vertice], 5)
-
     love.graphics.setLineWidth(5)
     love.graphics.polygon("line", self.vertices)
     love.graphics.setColor(1,1,1,1)
