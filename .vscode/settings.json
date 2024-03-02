@@ -18,5 +18,8 @@
         "titleBar.inactiveBackground": "#002b1f99",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#002b1f"
+    "peacock.color": "#002b1f",
+    "Lua.diagnostics.globals": [
+        "love"
+    ]
 }

@@ -10,7 +10,6 @@ local tank_capacity = 9
 local tank_increase_rate = 3
 local pumping_rate = 3
 
-
 local timer = 0
 
 function Ennemy:new(ocean, planet)

@@ -13,21 +13,20 @@ require 'func/gameloop'
 require 'func/ui'
 require 'func/button'
 require 'func/clock'
-
 local screen_ratio = 1920/1080
 WIND_H = 600 -- les variables globales sont écrites en majuscule
 WIND_W = 1000
 love.graphics.setDefaultFilter('nearest','nearest') -- pas de filtre pour les sprites
-love.window.setMode(WIND_W, WIND_H, {borderless = true})
+love.window.setMode(WIND_W, WIND_H, {borderless = true, display = 1})
 love.window.setTitle('node-node')
-background = love.graphics.newImage('assets/background/background_star_1000x600.png')
+BACKGROUND = love.graphics.newImage('assets/background/background_star_1000x600.png')
 CMU_serif = love.graphics.newFont("assets/fonts/computer-modern/cmunui.ttf", 40)
 local can_spawn = true
 local can_reduce_rate = true
 local dt_ennemy_spawn = 12
 
 function love.load()
-	sound = love.audio.newSource("assets/sounds/callsix__onda_lunar__120bpm_.wav", "static") 
+	sound = love.audio.newSource("assets/sounds/callsix_onda_lunar_120bpm.wav", "static")
 	ennemies = {} -- list of ennemies
 	spawn_timer = Timer()
 	spawn_rate_timer = Timer()
@@ -84,7 +83,7 @@ end
 
 
 function love.draw()
-	love.graphics.draw(background, 0, 0, 0, 1, 1)
+	love.graphics.draw(BACKGROUND, 0, 0, 0, 1, 1)
 	for i, ennemy in ipairs(ennemies) do
 		ennemies[i]:draw()
 	end

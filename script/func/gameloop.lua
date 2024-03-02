@@ -128,7 +128,7 @@ function Gameloop:draw()
         self.titlescreen:draw()
 
     elseif self.state == 'rules' then
-        local rules_str_1 = 'Your little planetary system is getting invaded!\nHelp your planet to get rid of these water\nrobbers by provoking colossal tides.\nUse the RIGHT and LEFT arrows of your\nkeyboard to move around your planet. Then,\npress the UP arrow to generate tides and\ndestroy ennemy ships. Otherwise, they will\npump the entire ocean down!'
+        local rules_str_1 = 'Your little planetary system is getting invaded!\nHelp your planet to get rid of these water\nrobbers by generating colossal tides.\nUse the RIGHT and LEFT arrows of your\nkeyboard to move around your planet. Then,\npress the UP arrow to generate tides and\ndestroy ennemy ships. Otherwise, they will\npump the entire ocean down!'
         love.graphics.print(rules_str_1, self.small_font, 35, 170 )
         self.rules_screen:draw()
 

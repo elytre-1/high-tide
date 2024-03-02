@@ -1,0 +1,5 @@
+# makelove --config make_all.toml
+name = "high-tide"
+default_targets = ["win32", "win64", "macos"]
+build_directory = "../bin"
+love_files = ["+*","-*/.*"]
