@@ -26,35 +26,35 @@ local can_reduce_rate = true
 local dt_ennemy_spawn = 12
 
 function love.load()
-	sound = love.audio.newSource("assets/sounds/callsix_onda_lunar_120bpm.wav", "static")
-	ennemies = {} -- list of ennemies
-	spawn_timer = Timer()
-	spawn_rate_timer = Timer()
-	planet = Planet(WIND_W/2, WIND_H/2)
-	moon = Moon(planet)
-	ocean = Ocean(planet,moon)
-	gameloop = Gameloop(CMU_serif, ennemies, ocean, planet)
-	gameloop.state = 'titlescreen'
+	SOUND = love.audio.newSource("assets/sounds/callsix_onda_lunar_120bpm.wav", "static")
+	ENNEMIES = {} -- list of ennemies
+	SPAWN_TIMER = Timer()
+	SPAWN_RATE_TIMER = Timer()
+	PLANET = Planet(WIND_W/2, WIND_H/2)
+	MOON = Moon(PLANET)
+	OCEAN = Ocean(PLANET,MOON)
+	GAMELOOP = Gameloop(CMU_serif, ENNEMIES, OCEAN, PLANET)
+	GAMELOOP.state = 'titlescreen'
 end
 
 
 function love.update(dt)
-	gameloop:update(dt)
-	planet:update(dt)
-	moon:update(planet)
-	ocean:update(planet, moon, dt)
+	GAMELOOP:update(dt)
+	PLANET:update(dt)
+	MOON:update(PLANET)
+	OCEAN:update(PLANET, MOON, dt)
 
 	-- spawn ennemies
-	spawn_timer:update(dt)
-	spawn_rate_timer:update(dt)	
+	SPAWN_TIMER:update(dt)
+	SPAWN_RATE_TIMER:update(dt)	
 
-	if gameloop.state == 'game' then
+	if GAMELOOP.state == 'game' then
 		-- reduce time between two spawns
 		if can_reduce_rate then
 			can_reduce_rate = false
 			if dt_ennemy_spawn >=4 then
 				-- print('reduce spawn delay')
-				spawn_rate_timer:after(10,
+				SPAWN_RATE_TIMER:after(10,
 					function()
 						dt_ennemy_spawn = dt_ennemy_spawn - 2
 						can_reduce_rate = true
@@ -65,33 +65,33 @@ function love.update(dt)
 		-- spawn ennemy
 		if can_spawn then
 			can_spawn = false
-			table.insert(ennemies, Ennemy(ocean, planet))
-			spawn_timer:after(dt_ennemy_spawn, function() can_spawn = true end)
+			table.insert(ENNEMIES, Ennemy(OCEAN, PLANET))
+			SPAWN_TIMER:after(dt_ennemy_spawn, function() can_spawn = true end)
 		end
 
 		-- update ennemies
-		for i, ennemy in ipairs(ennemies) do
-			ennemies[i]:update(dt, ocean, planet, gameloop)
+		for i, ennemy in ipairs(ENNEMIES) do
+			ENNEMIES[i]:update(dt, OCEAN, PLANET, GAMELOOP)
 		end
 	end
 
 	-- soundtrack
-	if not sound:isPlaying() then
-		love.audio.play(sound)
+	if not SOUND:isPlaying() then
+		love.audio.play(SOUND)
 	end
 end
 
 
 function love.draw()
 	love.graphics.draw(BACKGROUND, 0, 0, 0, 1, 1)
-	for i, ennemy in ipairs(ennemies) do
-		ennemies[i]:draw()
+	for i, ennemy in ipairs(ENNEMIES) do
+		ennemy:draw()
 	end
 
-	gameloop:draw()
-	ocean:draw()
-	planet:draw()
-	moon:draw()
+	GAMELOOP:draw()
+	OCEAN:draw()
+	PLANET:draw()
+	MOON:draw()
 end
 
 
@@ -102,7 +102,7 @@ function love.keypressed(key, unicode)
 	end
 
 	if key == 'up' then
-		ocean:big_wave()
-		moon:attack()
+		OCEAN:big_wave()
+		MOON:attack()
 	end
 end
