@@ -1,0 +1,2 @@
+# high-tide
+Submission to the game jam [LÖVE Jam 2024](https://itch.io/jam/love2d-jam-2024/results), which is a ten days event during which each participant must produce a game with the framework [LÖVE2D](https://love2d.org/). The game page is hosted on [itch.io](https://iridescentelytra.itch.io/high-tide), where you can download the executable files for macOS and Windows.
